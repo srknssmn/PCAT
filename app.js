@@ -1,5 +1,5 @@
 const express = require('express'); // express modülü
-const path = require('path')  // PATH modülü
+const path = require('path'); // PATH modülü
 const app = express();
 
 /*
@@ -33,7 +33,7 @@ app.get('/', (req, res) => {
   res.send(photo);
   */
 
-  res.sendFile(path.resolve(__dirname, 'temp/index.html'));   // Path __mkdir ile klasör bulunuyor.
+  res.sendFile(path.resolve(__dirname, 'temp/index.html')); // Path __mkdir ile klasör bulunuyor.
 });
 
 const port = 3000;
