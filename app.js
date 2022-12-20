@@ -8,10 +8,13 @@ const app = express();
 // EJS - Dinamik modülünü aktifleştirdir.
 app.set('view engine', 'ejs');
 
+// MIDDLEWARES
 // Statik modülü aktifleştirildi.
 app.use(express.static('public')); // Static Files Middleware
+// Forma yazılan String verileri okumak için çalıştırılan modüller.
+app.use(express.urlencoded({extended:true})) //url datasını okumak
+app.use(express.json()) // urlde okunan datayı json formatına çevirmek.
 
-// MIDDLEWARES
 /*
 // Middleware Örnekleri
 const myLogger = (req, res, next) => {
@@ -50,6 +53,13 @@ app.get('/about', (req, res) => {
 
 app.get('/add', (req, res) => {
   res.render('add');
+});
+
+// Form post
+// add.ejs de formda yazılan /photos burada yakalanıyor.
+app.post('/photos', (req, res) => {
+  console.log(req.body);  //Yapılan isteğin body kısmı console a yazdırılıyor.
+  res.redirect('/') // Ana sayfaya yönlendiriyor ve işlemi kapatıyor.
 });
 
 const port = 3000;
