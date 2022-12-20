@@ -1,14 +1,22 @@
+// *** MODULES ***
 const express = require('express'); // express modülü
+const mongoose = require('mongoose'); // mongoose modülü
+
 const ejs = require('ejs'); // EJS modülü
 const path = require('path'); // PATH modülü
+const Photo = require('./models/Photo') // Photo dosyası içeri alındı.
 
 const app = express();
 
-// TEMPLATE ENGINE
+//connect DB
+// Kendi sunucumuzda database oluşturuldu.
+mongoose.connect('mongodb://127.0.0.1:27017/pcat-test-db');
+
+// *** TEMPLATE ENGINE ***
 // EJS - Dinamik modülünü aktifleştirdir.
 app.set('view engine', 'ejs');
 
-// MIDDLEWARES
+// *** MIDDLEWARES ***
 // Statik modülü aktifleştirildi.
 app.use(express.static('public')); // Static Files Middleware
 // Forma yazılan String verileri okumak için çalıştırılan modüller.
@@ -33,8 +41,11 @@ app.use(myLogger2); // Kendi oluşturduğumuz Middleware 2
 
 // ROUTES
 // app.get de bir Middlewaredir.
-app.get('/', (req, res) => {
-  res.render('index');
+app.get('/', async (req, res) => {
+  const photos = await Photo.find({})
+  res.render('index', {
+    photos
+  });
   // Örnek "send" Gönderimi.
   /*const photo = {
     id: 1,
@@ -56,9 +67,10 @@ app.get('/add', (req, res) => {
 });
 
 // Form post
-// add.ejs de formda yazılan /photos burada yakalanıyor.
-app.post('/photos', (req, res) => {
-  console.log(req.body);  //Yapılan isteğin body kısmı console a yazdırılıyor.
+// add.ejs de form post ve formda yazılan action: /photos burada yakalanıyor.
+app.post('/photos', async (req, res) => {
+  // console.log(req.body);  //Yapılan isteğin body kısmı console a yazdırılıyor.
+  await Photo.create(req.body) // Photo.js e formdan gelen bilgi gönderiliyor.
   res.redirect('/') // Ana sayfaya yönlendiriyor ve işlemi kapatıyor.
 });
 
