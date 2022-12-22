@@ -74,6 +74,13 @@ app.post('/photos', async (req, res) => {
   res.redirect('/') // Ana sayfaya yönlendiriyor ve işlemi kapatıyor.
 });
 
+app.get('/photos/:id', async (req, res) => {
+  const photo = await Photo.findById(req.params.id)
+  res.render('photo', {
+    photo
+  });
+});
+
 const port = 3000;
 app.listen(port, () => {
   console.log(`Sunucu ${port} portunda baslatildi..`);
