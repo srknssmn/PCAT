@@ -27,7 +27,11 @@ app.use(express.urlencoded({ extended: true })); //url datasını okumak
 app.use(express.json()); // urlde okunan datayı json formatına çevirmek.
 // File upload modülünü çalıştırıyoruz.
 app.use(fileUpload());
-app.use(methodOverride('_method'));
+app.use(
+  methodOverride('_method', {
+    methods: ['POST', 'GET'],
+  })
+);
 
 /*
 // Middleware Örnekleri
@@ -121,12 +125,30 @@ app.put('/photos/:id', async (req, res) => {
   // photo'yu yakalıyoruz.
   const photo = await Photo.findOne({ _id: req.params.id });
   // photo bilgilerini güncelliyoruz.
-  photo.title = req.body.title
-  photo.description = req.body.description
-  photo.save()
+  photo.title = req.body.title;
+  photo.description = req.body.description;
+  photo.save();
 
   // yeni bilgiler kaydedildikten sonra, aynı sayfaya geri dönecek.
-  res.redirect(`/photos/${req.params.id}`)
+  res.redirect(`/photos/${req.params.id}`);
+});
+
+// GÖRSELİ UPLOADS KLASÖRÜNDEN SİLMEDEN DELETE İŞLEMİ
+/*
+app.delete('/photos/:id', async (req,res) => {
+  await Photo.findByIdAndRemove(req.params.id)
+  res.redirect('/');  // Ana sayfaya yönlendirme.
+})
+*/
+
+// GÖRSELİ UPLOADS KLASÖRÜNDEN SİLEREK YAPILAN DELETE İŞLEMİ
+app.delete('/photos/:id', async (req, res) => {
+  const photo = await Photo.findOne({ _id: req.params.id });
+  let deletedImage = __dirname + '/public' + photo.image;
+  fs.unlinkSync(deletedImage);
+
+  await Photo.findByIdAndRemove(req.params.id);
+  res.redirect('/'); // Ana sayfaya yönlendirme.
 });
 
 const port = 3000;
