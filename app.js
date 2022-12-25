@@ -52,10 +52,30 @@ app.use(myLogger2); // Kendi oluşturduğumuz Middleware 2
 // ROUTES
 // app.get de bir Middlewaredir.
 app.get('/', async (req, res) => {
+
+  //PAGINATION OLAN HALİ
+  const page = req.query.page || 1; // page girmezse 1. sayfa açılacak
+  const photosPerPage = 2; // Bir sayfada gösterilecek photo sayısı
+
+  const totalPhotos = await Photo.find().countDocuments(); // Toplam photo sayısı
+  // tüm photoları sıralıyor ve limitliyoruz.
+  const photos = await Photo.find({})
+  .sort('-dateCreated')
+  .skip((page-1) * photosPerPage) // Bir önceki sayfadaki gösterilecek photoları pas geçiyor.
+  .limit(photosPerPage) // gösterilecek sayfa sayısını limitliyoruz.
+
+  res.render('index', {
+    photos: photos, // index sayfasına Photos gönderiliyor
+    current: page,  // index sayfasına page bilgisi gönderiliyor
+    pages: Math.ceil(totalPhotos / photosPerPage) // index sayfasına gösterilecek page sayıgısı gönderiliyor
+  });
+
+  /* PAGINATION OLMAYAN HALİ 
   const photos = await Photo.find({}).sort('-dateCreated'); // sort datecreated ile postları sıraladık.
   res.render('index', {
     photos,
   });
+  */
   // Örnek "send" Gönderimi.
   /*const photo = {
     id: 1,
